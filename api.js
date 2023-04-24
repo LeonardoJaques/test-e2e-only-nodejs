@@ -16,7 +16,7 @@ async function loginRoute(request, response) {
   }
   const token = JWT.sign({ user, message: "hey you" }, JWT_KEY);
 
-  response.end(JSON.stringify({ token }));
+  return response.end(JSON.stringify({ token }));
 }
 function isHeadersValid(headers) {
   try {
@@ -27,15 +27,48 @@ function isHeadersValid(headers) {
     return false;
   }
 }
+
+async function createProductRoute(request, response) {
+  const { description, price } = JSON.parse(await once(request, "data"));
+
+  // 0 - 50 basic
+  // 51 - 100 regular
+  // 101 - 500 premium
+  let categories = {
+    premium: {
+      from: 101,
+      to: 500,
+    },
+    regular: {
+      from: 50,
+      to: 100,
+    },
+    basic: {
+      from: 0,
+      to: 50,
+    },
+  };
+  const category = Object.keys(categories).find((keys) => {
+    const category = categories[keys];
+    return price >= category.from && price <= category.to;
+  });
+  return response.end(JSON.stringify({ category }));
+}
 async function handler(request, response) {
   if (request.url === "/login" && request.method === "POST") {
     return loginRoute(request, response);
   }
+
   if (!isHeadersValid(request.headers)) {
     response.writeHead(400);
     return response.end(JSON.stringify({ error: " invalid token!" }));
   }
-  response.end(json.stringify({ result: "Hey welcome" }));
+  if (request.url === "/products" && request.method === "POST") {
+    return createProductRoute(request, response);
+  }
+
+  response.writeHead(404);
+  response.end("not found");
 }
 
 const port = 3000;
