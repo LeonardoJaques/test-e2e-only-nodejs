@@ -17,7 +17,4 @@ The third test checks that a 400 Bad Request response is returned if no token is
 provided. Finally, the fourth test checks that a 200 OK response is returned if
 a valid token is provided.
 
-As for the reference to Erick Wendel's course, I'm not exactly sure what you're
-asking for. If you're asking for a comparison between this code and something
-from Erick Wendel's course, I would need more information about what
-specifically you're looking for.
+As for the reference to Erick Wendel's course.
